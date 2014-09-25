@@ -1,2 +1,4 @@
-WebGL_Presentation
+WebGL Presentation
 ==================
+
+A presenation about WebGL and Three/js
