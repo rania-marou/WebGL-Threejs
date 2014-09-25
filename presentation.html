@@ -1,0 +1,334 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+        <title>WebGL - Three.js Presentation | Rania Marou</title>
+        <link rel="stylesheet" href="reveal/css/reset.css" type="text/css" media="screen" charset="utf-8">
+        <link rel="stylesheet" href="reveal/css/main.css" type="text/css" media="screen" charset="utf-8">
+        <script type="text/javascript" src="jquery.1.7.1.min.js"></script>
+        <script type="text/javascript" src="Three.js"></script>
+        <script type="text/javascript" src="threejs_cube.js"></script>
+        <script type="text/javascript" src="threejs_cubes.js"></script>
+        <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+        <script type="text/javascript" src="webgl-utils.js"></script>
+
+        <!-- Written in a special shader language, called GLSL, that owes a lot to C -->
+        <script id="shader-fs" type="x-shader/x-fragment">
+            precision mediump float;
+
+            varying vec4 vColor;
+
+            void main(void) {
+                gl_FragColor = vColor;
+            }
+        </script>
+        <script id="shader-vs" type="x-shader/x-vertex">
+            attribute vec3 aVertexPosition;
+            attribute vec4 aVertexColor;
+
+            uniform mat4 uMVMatrix;
+            uniform mat4 uPMatrix;
+
+            varying vec4 vColor;
+
+            void main(void) {
+                gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1);
+                vColor = aVertexColor;
+            }
+        </script>
+        <script type="text/javascript" src="webgl_cube.js"></script>
+        <style type="text/css" media="screen">
+            body {
+                font-family: georgia, helvetica, arial, serif;
+            }
+            .webglHowTo {
+                float: left;
+                list-style: none;
+                padding: 0px 60px 80px;
+            }
+            .webglHowTo > img {
+                display: block;
+            }
+            #wrap {
+                background-color: transparent;
+                border-radius: 5px;
+                border: 3px dashed #99cc00;
+                position: relative;
+                height: 400px;
+                width: 600px;
+                margin: 0 auto;
+            }
+        </style>
+    </head>
+    <body onload="webGLStart();">
+        <div id="reveal">
+            <div class="slides">
+                <section id="title">
+                    <section>
+                        <h1>WebGL</h1>
+                        <p style="font-size: 80%">Let's make the web dance</p>
+                    </section>
+                    <section>
+                        <h1>Reveal.js</h1>
+                        <a href="http://lab.hakim.se/reveal-js/#/">http://lab.hakim.se/reveal-js/#/</a>
+                    </section>
+                </section>
+                <!-- What is WebGL? -->
+                <section>
+                    <section>
+                        <h1>What is WebGL?</h1>
+                        <p class="fragment">The cube in the previous slide!</p>
+                    </section>
+                    <section>
+                        <h2>ok,</h2>
+                        <p>
+                            WebGL (Web Graphics Library) is a JavaScript API for rendering interactive 3D graphics and 2D graphics within any compatible web browser without the use of plug-ins
+                        </p>
+                    </section>
+                </section>
+                <!-- Fun Facts -->
+                <section>
+                    <h1 id="">Fun Facts</h1>
+                    <ul>
+                        <li>Based on OpenGL ES 2.0</li>
+                        <li>Context of HTML Canvas</li>
+                        <li>A fast way to put lots of triangles,<br />lines and points on the screen</li>
+                        <li>Lets you draw awesome stuff</li>
+                    </ul>
+                </section>
+                <!-- Supported browsers -->
+                <section>
+                    <section>
+                        <h1>Supported browsers</h1>
+                    </section>
+                    <section>
+                        <h2>Desktop:</h2>
+                        <ul>
+                            <li>Firefox 4+</li>
+                            <li>Chrome 9+</li>
+                            <li>Safari 5.1 OS X Lion (disabled by default)</li>
+                            <li>Opera 12 pre-release</li>
+                        </ul>
+                        <br /><br />
+                        <h4 class="fragment">What about IE?</h4>
+                        <p class="fragment">partially supported in Internet Explorer 11</p>
+                    </section>
+                    <section>
+                        <h2>Mobile:</h2>
+                        <ul>
+                            <li>Firefox 4+</li>
+                            <li>Firefox OS</li>
+                            <li>BlackBerry PlayBook 2.0</li>
+                            <li>Chrome 25+</li>
+                            <li>Ubuntu Touch</li>
+                            <li>WebOS</li>
+                            <li>Safari (OS 8)</li>
+                            <li>Opera 12 (Android)</li>
+                            <li>Internet Explorer (Windows Phone 8.1?)</li>
+                        </ul>
+                    </section>
+                </section> 
+
+                <section>
+                    <h1>What really WEbgL is?</h1>
+                    <p class="fragment">OpenGL + JavaScript</p>
+                </section>
+
+                <!-- OpenGL -->
+                <section>
+                    <section>
+                        <h1>What is OpenGL?</h1>
+                        <p>A standard specification defining a cross-language, cross-platform API for writing applications that produce 2D and 3D computer graphics.</p>
+                    </section>
+                
+                    <section>
+                        <h1>OpenGL Nouns</h1>
+                        <ul>
+                            <li>Vertices</li>
+                            <li>Primitives</li>
+                            <li>Matrices</li>
+                            <li>Textures</li>
+                            <li>Blending (Alpha)</li>
+                            <li>Buffers</li>
+                            <li>Shaders</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h1>Vertices &amp; Primitives</h1>
+                        <img src="http://3.bp.blogspot.com/_3LRNVfBfliQ/Sdrassh4daI/AAAAAAAAAs8/PJHO65VEvyw/s400/opengles_primitives.png" />
+                    </section>
+                    <section>
+                        <h1>Matrices</h1>
+                        <p>Used to represent transformations</p>
+                        <ul>
+                            <li>
+                                ModelView Matrix<br />
+                                position / scale / rotation<br /><br />
+                            </li>
+                            <li>
+                                Projection Matrix <br />
+                                Defines a clipping volume
+                                <!-- (clipping just means "don't draw vertices outside of this volume") -->
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h1>Textures</h1>
+                        <p>Just an image that you map to a set of vertices</p>
+                        <img src="images/crate.png" />
+                    </section>
+                    <section>
+                        <h1>Buffers</h1>
+                        <p>There are many different kinds of buffers, but<br />for the most part they're just chunks of memory.<br />The ones you care about are:</p>
+                        <ul>
+                            <li>Array Buffers</li>
+                            <li>Frame Buffers</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h1>Shaders</h1>
+                        <ul>
+                            <li>Not just for shading</li>
+                            <li>Programs that run per-vertex or<br />per-fragment (think "pixel") on the GPU</li>
+                            <li>Run entirely on your graphics card's GPU</li>
+                        </ul>
+                    </section>
+                </section>
+
+                <!-- What it doesn't have -->
+                <section>
+                    <h1>What it doesn't have</h1>
+                    <ul>
+                        <li>Camera System</li>
+                        <li>Audio</li>
+                        <li>Text/Fonts</li>
+                        <li>Networking</li>
+                    </ul>
+                </section>
+
+                <!-- Let's move a cube -->
+                <section>
+                    <section>
+                        <h1>Let's move a cube</h1>
+                        <canvas id="mycanvas" style="border: none;" width="400" height="400"></canvas>
+                        <h3>and see how it works</h3>
+                    </section>
+                    <section>
+                        <h3>We create a buffer to store:</h3>
+                        <ul>
+                            <li class="webglHowTo">Vertices<br/><img src="images/vertices.png" /></li>
+                            <li class="webglHowTo">Colors<br/><img src="images/colors.png" /></li>
+                            <li class="webglHowTo">CubeVertexIndices<br/><img src="images/cubevertxindexes.png" /></li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Then, we create the scene by telling WebGL:</h3>
+                        <ul>
+                            <li>Perspectives<br/><img src="images/perspectives.png" /></li>
+                            <li>xyz object's position<br/><img src="images/xyz.png" /></li>
+                            <li>xyz rotation coordinates<br/><img src="images/xyzritation.png" /></li>
+                            <li>Finally we add the animation<br/><img src="images/animation.png" /></li>
+                        </ul>
+                    </section>
+                </section>
+
+                <!-- Three.js -->
+                <section>
+                    <h1>Low level, right?</h1>
+                    <h3 class="fragment">Let's talk about libraries</h3>
+                    <ul class="fragment">
+                        <li>Get things done faster</li>
+                        <li>Easy to use</li>
+                        <li>Write less code</li>
+                        <li>More features</li>
+                    </ul>
+                </section>
+                <section>
+                    <section id="three">
+                        <h1>Three.js</h1>
+                        <h3>A JS 3D Library which makes WebGL simpler</h3>
+                    </section>
+                    <section>
+                        <h1>All we need is</h1>
+                        <ul>
+                            <li>Set the camera<br/><img src="images/camera.png" /></li>
+                            <li>Set the object<br/><img src="images/geom_material.png" /></li>
+                            <li>Render object in canvas<br/><img src="images/renderer.png" /></li><li>Add animation<br/><img src="images/three_animation.png" /></li>
+                        </ul>
+                    </section>
+                </section>
+
+                <!-- Three.js Examples -->
+                <section>
+                    <section>
+                        <h1>what Can We do with WebGL?</h1>
+                        <h3 class="fragment">Everything</h3>
+                    </section>
+                    <section>
+                        <ul>
+                            <li><a href="logo/daeObj.html" target="_blank">CML Logo</a></li>
+                            <li><a href="http://middle-earth.thehobbit.com" target="_blank">The Hobbit</a></li>
+                            <li><a href="http://carvisualizer.plus360degrees.com/classics" target="_blank">Car visualizer</a></li>
+                            <li><a href="http://hellorun.helloenjoy.com/" target="_blank">HelloRun</a></li>
+                            <li><a href="http://inear.se/beanstalk" target="_blank">Beanstalk</a></li>
+                            <li><a href="http://data-arts.appspot.com/globe/" target="_blank">World Population</a></li>
+                            <li><a href="http://chandlerprall.github.io/Physijs/examples/jenga.html" target="_blank">A Jenga!</a></li>
+                        </ul>
+                    </section>
+                </section>
+                
+                <!-- Resources -->
+                <section>
+                    <h1>Resources</h1>
+                    <ul>
+                        <li><a href="http://learningwebgl.com/blog/?page_id=1217">Learning WebGL</a></li>
+                        <li><a href="http://www.khronos.org/webgl/wiki/Main_Page">Khronos WebGL Wiki</a></li>
+                        <li><a href="http://www.chromeexperiments.com/webgl">Chrome Experiments</a></li>
+                        <li><a href="https://github.com/davertron/webgl-presentation">WebGL Presentation</a></li>
+                        <li><a href="https://github.com/mrdoob/three.js/">Three.js</a> / <a href="http://www.glge.org/">GLGE</a> / <a href="http://www.ambiera.com/copperlicht/">Copperlicht</a> / <a href="http://www.c3dl.org/">C3DL</a></li>
+                        <li><a href="http://alteredqualia.com/">AlteredQualia</a></li>
+                        <li><a href="http://www.iquilezles.org/apps/shadertoy/">Shader Toy</a></li>
+                        <li><a href="http://box2d-js.sourceforge.net/">Box2DJS</a></li>
+                    </ul>
+                </section>
+                <section>
+                    <h1 id="">Thank you</h1>
+                    <a href="https://github.com/rania-marou/WebGL-Threejs">https://github.com/rania-marou/WebGL-Threejs</a>
+                </section>
+            </div>
+            <aside class="controls">
+				<a class="left" href="#">&#x25C4;</a>
+				<a class="right" href="#">&#x25BA;</a>
+				<a class="up" href="#">&#x25B2;</a>
+				<a class="down" href="#">&#x25BC;</a>
+			</aside>
+            <div class="progress"><span></span></div>
+        </div>
+
+        <script type="text/javascript" src="reveal/js/reveal.js"></script>
+        <script type="text/javascript" src="reveal/lib/highlight.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            // Parse the query string into a key/value object
+			var query = {};
+			location.search.replace( /[A-Z0-9]+?=(\w*)/gi, function(a) {
+				query[ a.split( '=' ).shift() ] = a.split( '=' ).pop();
+			} );
+            
+            Reveal.initialize({
+				// Display controls in the bottom right corner
+				controls: true,
+				// Display a presentation progress bar
+				progress: true,
+				// If true; each slide will be pushed to the browser history
+				history: false,
+				// Apply a 3D roll to links on hover
+				rollingLinks: true,
+				// UI style
+				theme: query.theme || 'default', // default/neon
+				// Transition style
+				transition: query.transition || 'default' // default/cube/page/concave/linear(2d)
+			});
+			hljs.initHighlightingOnLoad();
+        </script>
+    </body>
+</html>
