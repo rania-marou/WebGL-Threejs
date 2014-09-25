@@ -1,4 +1,4 @@
-WebGL Presentation
-==================
+WebGL - Three.js Presentation
+=============================
 
-A presenation about WebGL and Three/js
+A presenation about WebGL and Three.js
