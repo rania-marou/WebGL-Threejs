@@ -1,0 +1,14 @@
+body {
+	background-color:#161616;
+}
+
+#wrap {
+	background-color: transparent;
+	background-size: 100% 100%;
+	background-repeat:no-repeat;
+	border-radius: 5px;
+	position: relative;
+	height: 800px;
+	padding: 10px;
+	margin: 20px 0;
+}

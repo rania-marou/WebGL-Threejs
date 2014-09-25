@@ -1,0 +1,94 @@
+<html> 
+    <head> 
+        <title>Three.js | Rania Marou</title> 
+    </head> 
+
+    <body>
+        <div id="wrap"></div>
+        <link href="global.css" rel="stylesheet" type="text/css" media="screen" />
+        <script src="three.js"></script> 
+        <script src="ColladaLoader.js"></script> 
+        <script src="OrbitControls.js"></script>
+
+        <script>
+            // To actually be able to display anything with Three.js, we need three things: scene, camera and renderer   
+            var scene, camera, renderer;
+                init();
+                animate();
+
+                function init() {
+                    // create a scene
+                    scene = new THREE.Scene();
+                    // set up width and height
+                    var WIDTH = window.innerWidth-50,
+                        HEIGHT = 800;
+                    // create canvas
+                    renderer = new THREE.WebGLRenderer({alpha: true, antialias:true});
+                    renderer.setSize(WIDTH, HEIGHT);
+                    renderer.setClearColor( 0x000000, 0 );
+                    
+                    document.getElementById("wrap").appendChild(renderer.domElement);
+                    // set up the camera 
+                    // fov: how wide the field of view is
+                    // aspect: aspect ratio 
+                    // near/far: specify cut-off points for objects in the camera's view
+                    camera = new THREE.PerspectiveCamera(1, WIDTH / HEIGHT, 0.1, 10000);
+                    // XYZ coordinates
+                    camera.position.set(0, 0, 40);
+                    scene.add(camera);
+                    // whenever the user resizes his browser window the projection matrix will be updated
+                    window.addEventListener('resize', function() {
+                        var WIDTH = window.innerWidth-50,
+                            HEIGHT = 800;
+                        renderer.setSize(WIDTH, HEIGHT);
+                        camera.aspect = WIDTH / HEIGHT;
+                        camera.updateProjectionMatrix();
+                    });
+                    // set up the light: light color and light strength
+                    // first light
+                    var light = new THREE.PointLight(0xfffff3, 1);
+                    light.position.set(80,80,175);
+                    scene.add(light);
+
+                    var backlight = new THREE.PointLight(0xfffff3, 0.9);
+                    backlight.position.set(80,80,-175);
+                    scene.add(backlight);
+
+                    // var sphereSize = 1; 
+                    // var pointLightHelper = new THREE.PointLightHelper(light, sphereSize); 
+                    // scene.add(pointLightHelper);
+
+                    // second light
+                    var light2 = new THREE.PointLight(0xfffff3, 0.5);
+                    light2.position.set(-80,80,50);
+                    scene.add(light2);
+
+                    // third light    
+                    var light3 = new THREE.PointLight(0xFFFFFF, 0.4);
+                    light3.position.set(0,-80,50);
+                    scene.add(light3);
+
+                    // Adding the Collada model
+                    var loader = new THREE.ColladaLoader();
+                    loader.options.convertUpAxis = true;
+
+                    loader.load( 'logo.dae', function ( collada ) {
+                        var dae = collada.scene;
+                        var skin = collada.skins[0];
+                        dae.position.set(0,0,0);
+                        dae.scale.set(1,1,1);
+                        scene.add(dae);
+                    });
+
+                    // adding controls (mouse, zoom/rotate)
+                    controls = new THREE.OrbitControls(camera, renderer.domElement);
+                }
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    renderer.render(scene, camera);
+                    controls.update();
+                }
+        </script>
+    </body> 
+</html>
